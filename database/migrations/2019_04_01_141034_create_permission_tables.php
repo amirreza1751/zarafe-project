@@ -6,6 +6,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Spatie\Permission\Models\Role;
 
+
 class CreatePermissionTables extends Migration
 {
     /**
@@ -81,17 +82,18 @@ class CreatePermissionTables extends Migration
             $table->primary(['permission_id', 'role_id']);
         });
 
-        app('cache')
-            ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)
-            ->forget(config('permission.cache.key'));
-
         $user = User::create([
-            'name' => 'admin',
+            'username' => 'admin',
             'email' => 'a@example.com',
             'password' => Hash::make('111111')
         ]);
         $role = Role::create(['name' => 'admin']);
         $user->assignRole($role);
+
+        app('cache')
+            ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)
+            ->forget(config('permission.cache.key'));
+
     }
 
     /**
