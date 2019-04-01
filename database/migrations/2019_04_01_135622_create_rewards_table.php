@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateScoresTable extends Migration
+class CreateRewardsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,14 @@ class CreateScoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('scores', function (Blueprint $table) {
+        Schema::create('rewards', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('score');
+            $table->string('name');
+            $table->string('value');
+            $table->tinyInteger('rank');
             $table->timestamps();
         });
-
-        Schema::table('scores', function (Blueprint $table) {
-            $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
-
+        Schema::table('rewards', function (Blueprint $table) {
             $table->unsignedInteger('competition_id');
             $table->foreign('competition_id')->references('id')->on('competitions');
         });
@@ -35,6 +33,6 @@ class CreateScoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('scores');
+        Schema::dropIfExists('rewards');
     }
 }
