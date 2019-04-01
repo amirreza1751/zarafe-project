@@ -22,7 +22,7 @@ class CreateQuestionsTable extends Migration
             $table->string('option4');
             $table->string('score');
             $table->string('video');
-            $table->string('correct_answer');
+            $table->tinyInteger('correct_answer');
             $table->boolean('used');
             $table->timestamps();
         });
