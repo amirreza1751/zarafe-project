@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'fname', 'lname', 'username', 'avatar', 'phone_number'
     ];
 
     /**
@@ -27,6 +27,14 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+         'remember_token'
     ];
+
+    public function findForPassport($username) {
+        return $this->where('phone_number', $username)->first();
+    }
+
+    public function validateForPassportPasswordGrant($password){
+        return true;
+    }
 }

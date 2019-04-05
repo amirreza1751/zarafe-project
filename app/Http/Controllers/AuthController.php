@@ -21,22 +21,24 @@ class AuthController extends Controller
     public function signup(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|confirmed'
+            'phone_number' => 'required|unique:users',
         ]);
 
         $user = new User([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
+            'phone_number' => $request->phone_number,
         ]);
 
         $user->save();
+        $created_user = [
+            'phone_number' => $user->phone_number,
+//            'remember_me' => '1'
+        ];
 
-        return response()->json([
-            'message' => 'Successfully created user!'
-        ], 201);
+        $new_request = new \Illuminate\Http\Request();
+        $new_request->replace($created_user);
+        $login_response = app('App\Http\Controllers\AuthController')->login($new_request);
+
+        return $login_response;
     }
 
     /**
@@ -52,25 +54,23 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-            'remember_me' => 'boolean'
+            'phone_number' => 'required|string',
+//            'remember_me' => 'boolean'
         ]);
 
-        $credentials = request(['email', 'password']);
 
-        if(!Auth::attempt($credentials))
+        if(!Auth::attempt(['phone_number' => $request->phone_number]))
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
 
-        $user = $request->user();
+        $user = User::where('phone_number', $request->phone_number)->first();
 
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;
 
         if ($request->remember_me)
-            $token->expires_at = Carbon::now()->addWeeks(1);
+            $token->expires_at = Carbon::now()->addWeeks(300);
 
         $token->save();
 
@@ -81,6 +81,7 @@ class AuthController extends Controller
                 $tokenResult->token->expires_at
             )->toDateTimeString()
         ]);
+
     }
 
     /**
